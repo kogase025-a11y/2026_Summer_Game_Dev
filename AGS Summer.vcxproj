@@ -137,11 +137,12 @@
     <ClCompile Include="FPS\Fps.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Manager\SceneManager.cpp" />
+    <ClCompile Include="Scene\SceneClear.cpp" />
+    <ClCompile Include="Scene\SceneGame.cpp" />
+    <ClCompile Include="Scene\SceneTitle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
-    <ClInclude Include="Effect\EffectSuper.h" />
-    <ClInclude Include="Effect\PachinkoBlackoutEffect.h" />
     <ClInclude Include="FPS\Fps.h" />
     <ClInclude Include="Manager\FileManager.h" />
     <ClInclude Include="Manager\ResourceManager.h" />
@@ -151,7 +152,6 @@
     <ClInclude Include="Resource\SoundFile.h" />
     <ClInclude Include="Scene\SceneClear.h" />
     <ClInclude Include="Scene\SceneGame.h" />
-    <ClInclude Include="Scene\SceneStageSelect.h" />
     <ClInclude Include="Scene\SceneSuper.h" />
     <ClInclude Include="Scene\SceneTitle.h" />
     <ClInclude Include="Util\Rect.h" />
