@@ -7,8 +7,8 @@ class FileManager;
 class Application
 {
 public:
-	static constexpr int SCREEN_SIZE_WID =	800;		//ゲーム画面の横サイズ
-	static constexpr int SCREEN_SIZE_HIG = 600;		//ゲーム画面縦サイズ
+	static constexpr int SCREEN_SIZE_WID =	1920;		//ゲーム画面の横サイズ
+	static constexpr int SCREEN_SIZE_HIG = 1080;		//ゲーム画面縦サイズ
 
 
 	Application();								//コンストラクタ

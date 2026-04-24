@@ -9,6 +9,7 @@
 #include "../Scene/SceneStageSelect.h"
 #include "../Scene/SceneGame.h"
 #include "../Scene/SceneClear.h"
+#include "../Player/Player.cpp"
 
 namespace
 {

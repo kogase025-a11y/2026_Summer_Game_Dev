@@ -13,19 +13,34 @@ Player::~Player(void)
 
 bool Player::SystemInit(void)
 {
+	// システム初期化時にプレイヤー状態を初期化
+	positionX_ = 300.0f;
+	positionY_ = groundY_;
+	velocityY_ = 0.0f;
+	onGround_ = true;
+	stateName_ = "Idle";
 	return true;
 }
 
 void Player::GameInit(void)
 {
+	// ゲーム開始時のリセット
+	positionX_ = 300.0f;
+	positionY_ = groundY_;
+	velocityY_ = 0.0f;
+	onGround_ = true;
+	stateName_ = "Idle";
 }
 
 void Player::Update(void)
 {
+	// 旧インターフェース用（入力がない時は更新しない）
 }
 
 void Player::Draw(void)
 {
+	// 旧インターフェース用（カメラ0・画像なしで描画）
+	Draw(0.0f, -1);
 }
 
 bool Player::Release(void)
@@ -35,7 +50,10 @@ bool Player::Release(void)
 
 void Player::Update(const InputManager& input, float stageWidth)
 {
+	// プレイヤー当たり判定の半幅
 	const float playerHalfWidth = 24.0f;
+
+	// 現在のX座標が通常床か段差上かを返す
 	const auto getGroundYAtX = [this](float x)
 	{
 		if ((x >= stepStartX_) && (x <= stepEndX_))
@@ -45,14 +63,22 @@ void Player::Update(const InputManager& input, float stageWidth)
 		return groundY_;
 	};
 
+	// 左右入力（右=+1, 左=-1）
 	const float moveInput =
 		(input.IsPress(KEY_INPUT_RIGHT) ? 1.0f : 0.0f) -
 		(input.IsPress(KEY_INPUT_LEFT) ? 1.0f : 0.0f);
 
+	// 水平方向の移動
 	const float prevX = positionX_;
 	positionX_ += moveInput * moveSpeed_;
-	positionX_ = (std::max)(0.0f, (std::min)(positionX_, stageWidth));
 
+	// 画面（ステージ）外に出ないようにクランプ
+	const float clampedStageWidth = (std::max)(0.0f, stageWidth);
+	const float minX = playerHalfWidth;
+	const float maxX = (std::max)(minX, clampedStageWidth - playerHalfWidth);
+	positionX_ = (std::max)(minX, (std::min)(positionX_, maxX));
+
+	// 段差より下にいる時だけ側面衝突を有効にする
 	const bool isBelowStepTop = (positionY_ > stepTopY_ + 0.5f);
 	if (isBelowStepTop)
 	{
@@ -66,6 +92,7 @@ void Player::Update(const InputManager& input, float stageWidth)
 		}
 	}
 
+	// ジャンプ開始
 	const bool jumpPressed = input.IsTrigger(KEY_INPUT_SPACE);
 	if (jumpPressed && onGround_)
 	{
@@ -73,17 +100,22 @@ void Player::Update(const InputManager& input, float stageWidth)
 		onGround_ = false;
 	}
 
+	// 足元の床高さを取得
 	const float supportGroundY = getGroundYAtX(positionX_);
+
+	// 地形の切り替わりで足場が消えたら落下開始
 	if (onGround_ && (positionY_ < supportGroundY - 0.5f))
 	{
 		onGround_ = false;
 	}
 
+	// 空中時は重力適用
 	if (!onGround_)
 	{
 		velocityY_ += gravity_;
 	}
 
+	// 垂直方向の移動と着地判定
 	positionY_ += velocityY_;
 	if (positionY_ >= supportGroundY)
 	{
@@ -92,6 +124,7 @@ void Player::Update(const InputManager& input, float stageWidth)
 		onGround_ = true;
 	}
 
+	// 状態名更新（アニメーション等で利用）
 	if (input.IsTrigger(KEY_INPUT_X))
 	{
 		stateName_ = "Damage";
