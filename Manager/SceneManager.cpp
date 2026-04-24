@@ -9,7 +9,7 @@
 #include "../Scene/SceneGame.h"
 #include "../Scene/SceneClear.h"
 
-// プロジェクト未登録cppの実装取り込み
+// プロジェクト設定上で Player.cpp が未登録のため暫定で取り込み
 #include "../Player/Player.cpp"
 
 namespace
@@ -34,9 +34,11 @@ SceneManager::~SceneManager()
 
 void SceneManager::Update()
 {
+	// 通常状態なら現在シーンを更新
 	if (transition_.state == TransitionState::None)
 	{
 		currentScene->Update();
+		// シーン終了要求が来たらフェードアウトへ
 		if (currentScene->IsEnd() && !currentScene->GetIsTransition())
 		{
 			transition_.timer = 0.0f;
@@ -44,6 +46,7 @@ void SceneManager::Update()
 			transition_.state = TransitionState::FadeOutCurrent;
 		}
 	}
+	// 遷移中はフェード処理を更新
 	if (transition_.state != TransitionState::None)
 	{
 		UpdateTransition();
@@ -52,13 +55,14 @@ void SceneManager::Update()
 
 void SceneManager::UpdateTransition()
 {
-	transition_.timer += 1.0f; // フレームごとにタイマーを進める
+	// フレームごとに遷移タイマーを進める
+	transition_.timer += 1.0f;
 	float t = Clamp01(transition_.timer / transition_.duration);
 
 	switch (transition_.state)
 	{
 	case TransitionState::FadeOutCurrent:
-		// フェードアウトのロジック
+		// 現在シーンをフェードアウト
 		currentScene->SetIsTransition(true);
 		currentScene->SetTransitionOut(t);
 		if (t >= 1.0f)
@@ -67,14 +71,15 @@ void SceneManager::UpdateTransition()
 		}
 		break;
 	case TransitionState::SwitchScene:
+		// 次シーンに切り替えてフェードイン開始
 		ChangeScene(transition_.nextSceneID);
 		transition_.state = TransitionState::FadeInNext;
-		transition_.timer = 0.0f; // フェードインのタイマーをリセット
-		currentScene->SetTransitionIn(transition_.timer); // 最初の一フレーム目の描画
+		transition_.timer = 0.0f;
+		currentScene->SetTransitionIn(transition_.timer);
 		currentScene->SetIsTransition(true);
 		break;
 	case TransitionState::FadeInNext:
-		// フェードインのロジック
+		// 次シーンをフェードイン
 		currentScene->SetTransitionIn(t);
 		if (t >= 1.0f)
 		{
@@ -86,6 +91,7 @@ void SceneManager::UpdateTransition()
 
 void SceneManager::Draw()
 {
+	// 現在シーンの描画
 	if (currentScene)
 	{
 		currentScene->Draw();
@@ -94,6 +100,7 @@ void SceneManager::Draw()
 
 void SceneManager::ChangeScene(SceneSuper::SceneID nextSceneID)
 {
+	// 指定されたIDのシーンへ切り替える
 	switch (nextSceneID)
 	{
 	case SceneSuper::SceneID::TITLE:
