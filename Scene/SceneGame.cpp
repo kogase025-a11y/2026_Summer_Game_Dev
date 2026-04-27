@@ -1,14 +1,22 @@
 #include "SceneGame.h"
 
 #include "../Manager/FileManager.h"
+#include "../Util/Rect.h"
 
 #include <algorithm>
 
-SceneGame::SceneGame(FileManager&, SceneManager*)
+SceneGame::SceneGame(FileManager& fileMng, SceneManager* sceneMng)
+	: fileMng_(fileMng), sceneMng_(sceneMng)
 {
 	player_.SystemInit();
 	player_.GameInit();
+
+	// Git Project の FileManager を使ってプレイヤー画像を取得
+	// 画像が未配置でも player_.Draw 側で矩形描画にフォールバックする
+	playerImage_ = fileMng_.LoadImageFM(kPlayerImagePath);
 }
+
+SceneGame::~SceneGame() = default;
 
 void SceneGame::Update()
 {
@@ -23,8 +31,10 @@ void SceneGame::Update()
 	const float cameraMax = kStageWidth - static_cast<float>(kScreenWidth);
 	cameraX_ = (std::max)(0.0f, (std::min)(targetCameraX, cameraMax));
 
-	// ゴール到達でクリア
-	if (player_.GetX() >= kGoalX)
+	// Git Project の Rect を使ったゴール当たり判定
+	const Rect playerRect{ player_.GetX() - 24.0f, player_.GetY() - 48.0f, 48.0f, 48.0f };
+	const Rect goalRect{ kGoalX - 16.0f, player_.GetGroundY() - 180.0f, 32.0f, 180.0f };
+	if (playerRect.IsHit(goalRect))
 	{
 		EndScene(SceneID::CLEAR);
 		return;
@@ -62,8 +72,9 @@ void SceneGame::Draw()
 	DrawBox(goalDrawX - 8, groundY - 180, goalDrawX + 8, groundY, GetColor(255, 255, 255), TRUE);
 	DrawTriangle(goalDrawX + 8, groundY - 180, goalDrawX + 72, groundY - 150, goalDrawX + 8, groundY - 120, GetColor(255, 80, 80), TRUE);
 
-	// プレイヤー描画
-	player_.Draw(cameraX_, -1);
+	// プレイヤー描画（画像が無ければ Player 側で矩形描画）
+	const int playerGraphHandle = (playerImage_ ? playerImage_->GetHandle() : -1);
+	player_.Draw(cameraX_, playerGraphHandle);
 
 	// UI
 	DrawFormatString(20, 20, GetColor(255, 255, 255), "STATE: %s", player_.GetStateName());
