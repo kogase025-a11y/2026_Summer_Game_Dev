@@ -28,6 +28,9 @@ public:
 	float GetStepTopY() const;
 
 private:
+
+	
+
 	// Œ»İ‚Ìó‘Ô
 	float positionX_ = 300.0f;
 	float positionY_ = 760.0f;

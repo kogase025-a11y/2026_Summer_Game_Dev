@@ -14,7 +14,7 @@ Player::~Player(void)
 bool Player::SystemInit(void)
 {
 	// システム初期化時にプレイヤー状態を初期化
-	positionX_ = 300.0f;
+	positionX_ = 200.0f;
 	positionY_ = groundY_;
 	velocityY_ = 0.0f;
 	onGround_ = true;
