@@ -4,11 +4,8 @@
 #include <cstring>
 
 SceneTitle::SceneTitle(FileManager& fileMng)
-<<<<<<< HEAD
 
-=======
 	: titleBg_(fileMng.LoadImageFM("./image/GameClear.png"))//タイトルシーン画像の読み込み
->>>>>>> origin/koga
 {
 	
 	
