@@ -3,12 +3,16 @@
 #include <DxLib.h>
 #include <algorithm>
 
-Player::Player(void)
+Player::Player(FileManager& fileMng) : fileMng_(fileMng)
 {
+	
+	 particleTex = fileMng_.LoadImageFM("Image/ToiletPaper.PNG");
+
 }
 
 Player::~Player(void)
 {
+
 }
 
 bool Player::SystemInit(void)
@@ -152,6 +156,12 @@ void Player::Draw(float cameraX, int playerGraphHandle) const
 	const int drawX = static_cast<int>(positionX_ - cameraX);
 	const int drawY = static_cast<int>(positionY_);
 
+	if (particleTex)
+	{
+		DrawRotaGraph(drawX, drawY - 24, 1.0, 0.0, particleTex->GetHandle(), TRUE);
+		return;
+	}
+	
 	if (playerGraphHandle >= 0)
 	{
 		DrawRotaGraph(drawX, drawY - 24, 1.0, 0.0, playerGraphHandle, TRUE);

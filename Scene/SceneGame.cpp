@@ -6,7 +6,7 @@
 #include <algorithm>
 
 SceneGame::SceneGame(FileManager& fileMng, SceneManager* sceneMng)
-	: fileMng_(fileMng), sceneMng_(sceneMng)
+	: player_(fileMng), fileMng_(fileMng), sceneMng_(sceneMng)
 {
 	player_.SystemInit();
 	player_.GameInit();

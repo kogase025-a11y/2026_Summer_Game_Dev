@@ -4,7 +4,8 @@
 
 #include <cstring>
 
-SceneTitle::SceneTitle(FileManager&)
+SceneTitle::SceneTitle(FileManager& fileMng)
+
 {
 }
 

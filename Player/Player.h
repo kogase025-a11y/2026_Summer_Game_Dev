@@ -1,11 +1,22 @@
 #pragma once
 #include "../Input/InputManager.h"
+#include <memory>
+#include <vector>
+#include "../Application/Application.h"
+#include "../Resource/ImageFile.h"
+//#include "Stage.h"
+#include "../Util/Rect.h"
+
+class FileManager;
+class Vector2;
+class SceneGame;
+
 
 class Player
 {
 public:
 	// ¶¬E”jŠü
-	Player(void);
+	Player(FileManager& fileMng);
 	~Player(void);
 	// ‰Šú‰»E‰ğ•ú
 	bool SystemInit(void);
@@ -29,7 +40,11 @@ public:
 
 private:
 
-	
+	SceneGame* sceneGame_;
+	FileManager& fileMng_;
+
+
+	std::shared_ptr<ImageFile> particleTex;
 
 	// Œ»İ‚Ìó‘Ô
 	float positionX_ = 300.0f;
