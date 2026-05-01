@@ -3,6 +3,7 @@
 
 class FileManager;
 #include "../Scene/SceneSuper.h"
+#include "../Util/Fade.h"
 
 struct ClearResult
 {
@@ -23,16 +24,6 @@ public:
 		SwitchScene,
 	};
 
-	struct Transition
-	{
-		// 現在の遷移状態
-		TransitionState state = TransitionState::None;
-		// 経過フレーム
-		float timer = 0.0f;
-		float duration = 45.0f; // フェードの総時間（フレーム数）
-		// 遷移先シーン
-		SceneSuper::SceneID nextSceneID = SceneSuper::SceneID::NONE;
-	};
 	// シーン管理生成
 	SceneManager(FileManager& fileMng);
 	~SceneManager();
@@ -56,7 +47,9 @@ private:
 	bool isExit;
 
 	// 遷移管理データ
-	Transition transition_;
+	TransitionState transitionState_ = TransitionState::None;
+	SceneSuper::SceneID nextSceneID_ = SceneSuper::SceneID::NONE;
+	Fade fade_;
 
 	// クリア結果キャッシュ
 	ClearResult clearResult_;

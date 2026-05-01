@@ -12,16 +12,6 @@
 // プロジェクト設定上で Player.cpp が未登録のため暫定で取り込み
 #include "../Player/Player.cpp"
 
-namespace
-{
-	float Clamp01(float v)
-	{
-		if (v < 0.0f) return 0.0f;
-		if (v > 1.0f) return 1.0f;
-		return v;
-	}
-}
-
 SceneManager::SceneManager(FileManager& fileMng) : fileMng_(fileMng)
 {
 	currentScene = std::unique_ptr<SceneSuper>(new SceneTitle(fileMng_));
@@ -35,19 +25,19 @@ SceneManager::~SceneManager()
 void SceneManager::Update()
 {
 	// 通常状態なら現在シーンを更新
-	if (transition_.state == TransitionState::None)
+	if (transitionState_ == TransitionState::None)
 	{
 		currentScene->Update();
 		// シーン終了要求が来たらフェードアウトへ
 		if (currentScene->IsEnd() && !currentScene->GetIsTransition())
 		{
-			transition_.timer = 0.0f;
-			transition_.nextSceneID = currentScene->GetNextScene();
-			transition_.state = TransitionState::FadeOutCurrent;
+			nextSceneID_ = currentScene->GetNextScene();
+			transitionState_ = TransitionState::FadeOutCurrent;
+			fade_.Start(Fade::State::Out, 45.0f);
 		}
 	}
 	// 遷移中はフェード処理を更新
-	if (transition_.state != TransitionState::None)
+	if (transitionState_ != TransitionState::None)
 	{
 		UpdateTransition();
 	}
@@ -55,35 +45,33 @@ void SceneManager::Update()
 
 void SceneManager::UpdateTransition()
 {
-	// フレームごとに遷移タイマーを進める
-	transition_.timer += 1.0f;
-	float t = Clamp01(transition_.timer / transition_.duration);
+	fade_.Update();
 
-	switch (transition_.state)
+	switch (transitionState_)
 	{
 	case TransitionState::FadeOutCurrent:
 		// 現在シーンをフェードアウト
 		currentScene->SetIsTransition(true);
-		currentScene->SetTransitionOut(t);
-		if (t >= 1.0f)
+		currentScene->SetTransitionOut(fade_.GetProgress());
+		if (fade_.IsFinished())
 		{
-			transition_.state = TransitionState::SwitchScene;
+			transitionState_ = TransitionState::SwitchScene;
 		}
 		break;
 	case TransitionState::SwitchScene:
 		// 次シーンに切り替えてフェードイン開始
-		ChangeScene(transition_.nextSceneID);
-		transition_.state = TransitionState::FadeInNext;
-		transition_.timer = 0.0f;
-		currentScene->SetTransitionIn(transition_.timer);
+		ChangeScene(nextSceneID_);
+		transitionState_ = TransitionState::FadeInNext;
+		fade_.Start(Fade::State::In, 45.0f);
+		currentScene->SetTransitionIn(0.0f);
 		currentScene->SetIsTransition(true);
 		break;
 	case TransitionState::FadeInNext:
 		// 次シーンをフェードイン
-		currentScene->SetTransitionIn(t);
-		if (t >= 1.0f)
+		currentScene->SetTransitionIn(fade_.GetProgress());
+		if (fade_.IsFinished())
 		{
-			transition_.state = TransitionState::None;
+			transitionState_ = TransitionState::None;
 			currentScene->SetIsTransition(false);
 		}
 	}
@@ -95,6 +83,19 @@ void SceneManager::Draw()
 	if (currentScene)
 	{
 		currentScene->Draw();
+	}
+
+	// 遷移中のフェード描画
+	if (transitionState_ != TransitionState::None)
+	{
+		if (transitionState_ == TransitionState::SwitchScene)
+		{
+			fade_.DrawBlack();
+		}
+		else
+		{
+			fade_.Draw();
+		}
 	}
 }
 

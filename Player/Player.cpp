@@ -3,18 +3,22 @@
 #include <DxLib.h>
 #include <algorithm>
 
-Player::Player(void)
+Player::Player(FileManager& fileMng) : fileMng_(fileMng)
 {
+	
+	 particleTex = fileMng_.LoadImageFM("Image/ToiletPaper.PNG");
+
 }
 
 Player::~Player(void)
 {
+
 }
 
 bool Player::SystemInit(void)
 {
 	// システム初期化時にプレイヤー状態を初期化
-	positionX_ = 300.0f;
+	positionX_ = 200.0f;
 	positionY_ = groundY_;
 	velocityY_ = 0.0f;
 	onGround_ = true;
@@ -51,7 +55,7 @@ bool Player::Release(void)
 void Player::Update(const InputManager& input, float stageWidth)
 {
 	// プレイヤー当たり判定の半幅
-	const float playerHalfWidth = 24.0f;
+	const float playerHalfWidth = 30.0f;
 
 	// 現在のX座標が通常床か段差上かを返す
 	const auto getGroundYAtX = [this](float x)
@@ -152,17 +156,34 @@ void Player::Draw(float cameraX, int playerGraphHandle) const
 	const int drawX = static_cast<int>(positionX_ - cameraX);
 	const int drawY = static_cast<int>(positionY_);
 
+	if (particleTex)
+	{
+		DrawRotaGraph(drawX, drawY - 24, 1.0, 0.0, particleTex->GetHandle(), TRUE);
+		return;
+	}
+	
 	if (playerGraphHandle >= 0)
 	{
 		DrawRotaGraph(drawX, drawY - 24, 1.0, 0.0, playerGraphHandle, TRUE);
 		return;
 	}
 
-	const int left = drawX - 24;
-	const int right = drawX + 24;
+	const int left = drawX - 30;
+	const int right = drawX + 30;
 	const int top = drawY - 48;
 	const int bottom = drawY;
 	DrawBox(left, top, right, bottom, GetColor(120, 220, 255), TRUE);
+
+	// 当たり判定デバッグ描画（当たり判定の幅で赤い枠線を描画）
+#ifdef _DEBUG
+	const float playerHalfWidth = 30.0f;
+	const int debugLeft = static_cast<int>(positionX_ - playerHalfWidth - cameraX);
+	const int debugRight = static_cast<int>(positionX_ + playerHalfWidth - cameraX);
+	const int debugTop = static_cast<int>(positionY_ - 48.0f); // 描画の下端(bottom)は positionY_ と同じ
+	const int debugBottom = static_cast<int>(positionY_);
+
+	DrawBox(debugLeft, debugTop, debugRight, debugBottom, GetColor(255, 0, 0), FALSE); // FALSEで枠線のみ
+#endif
 }
 
 const char* Player::GetStateName() const

@@ -37,4 +37,7 @@ private:
 	FileManager& fileMng_;
 	SceneManager* sceneMng_ = nullptr;
 	std::shared_ptr<ImageFile> playerImage_;
+
+	// ポーズ中かどうかのフラグ
+	bool isPause_ = false;
 };

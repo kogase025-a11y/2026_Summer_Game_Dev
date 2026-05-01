@@ -6,7 +6,7 @@
 #include <algorithm>
 
 SceneGame::SceneGame(FileManager& fileMng, SceneManager* sceneMng)
-	: fileMng_(fileMng), sceneMng_(sceneMng)
+	: player_(fileMng), fileMng_(fileMng), sceneMng_(sceneMng)
 {
 	player_.SystemInit();
 	player_.GameInit();
@@ -22,6 +22,26 @@ void SceneGame::Update()
 {
 	// 入力状態更新
 	input_.Update();
+
+	// ESCキーでポーズの切り替え
+	if (input_.IsTrigger(KEY_INPUT_ESCAPE))
+	{
+		isPause_ = !isPause_;
+	}
+
+	// ポーズ中の場合はゲームの更新をストップしてメニュー操作のみ受け付ける
+	if (isPause_)
+	{
+		if (input_.IsTrigger(KEY_INPUT_RETURN))
+		{
+			EndScene(SceneID::TITLE); // Enterでタイトルへ戻る
+		}
+		if (input_.IsTrigger(KEY_INPUT_Q))
+		{
+			EndScene(SceneID::EXIT); // Qでゲーム終了
+		}
+		return;
+	}
 
 	// プレイヤー更新
 	player_.Update(input_, kStageWidth);
@@ -46,10 +66,7 @@ void SceneGame::Update()
 		EndScene(SceneID::CLEAR);
 		return;
 	}
-	if (CheckHitKey(KEY_INPUT_ESCAPE) != 0)
-	{
-		EndScene(SceneID::EXIT);
-	}
+	// 古いESC修了処理は削除
 }
 
 void SceneGame::Draw()
@@ -78,5 +95,21 @@ void SceneGame::Draw()
 
 	// UI
 	DrawFormatString(20, 20, GetColor(255, 255, 255), "STATE: %s", player_.GetStateName());
-	DrawString(20, 48, "LEFT/RIGHT: MOVE  SPACE: JUMP  C: CLEAR  ESC: EXIT", GetColor(0, 0, 0));
+	DrawString(20, 48, "LEFT/RIGHT: MOVE  SPACE: JUMP  C: CLEAR  ESC: PAUSE", GetColor(0, 0, 0));
+
+	// ポーズ画面描画
+	if (isPause_)
+	{
+		// 背景を半透明の黒で暗くする
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+		DrawBox(0, 0, kScreenWidth, kScreenHeight, GetColor(0, 0, 0), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		// メニューの枠と文字を描画
+		DrawBox(kScreenWidth / 2 - 200, 400, kScreenWidth / 2 + 200, 600, GetColor(50, 50, 150), TRUE);
+		DrawString(kScreenWidth / 2 - 80, 440, "PAUSE MENU", GetColor(255, 255, 255));
+		DrawString(kScreenWidth / 2 - 120, 490, "Press Enter to TITLE", GetColor(200, 200, 200));
+		DrawString(kScreenWidth / 2 - 120, 530, "Press ESC to RESUME", GetColor(200, 200, 200));
+		DrawString(kScreenWidth / 2 - 120, 570, "Press Q to QUIT GAME", GetColor(200, 200, 200));
+	}
 }
