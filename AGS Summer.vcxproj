@@ -140,6 +140,7 @@
     <ClCompile Include="Scene\SceneClear.cpp" />
     <ClCompile Include="Scene\SceneGame.cpp" />
     <ClCompile Include="Scene\SceneTitle.cpp" />
+    <ClCompile Include="Util\Fade.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="Scene\SceneGame.h" />
     <ClInclude Include="Scene\SceneSuper.h" />
     <ClInclude Include="Scene\SceneTitle.h" />
+    <ClInclude Include="Util\Fade.h" />
     <ClInclude Include="Util\Rect.h" />
     <ClInclude Include="Util\Vector2.h" />
   </ItemGroup>

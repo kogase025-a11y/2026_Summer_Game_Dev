@@ -35,10 +35,13 @@ void Application::Run(void)
 {
 	while (ProcessMessage() == 0)
 	{
+		// ポーズメニューを実装するため、ここでのESC強制終了は無効化します
+		/*
 		if (CheckHitKey(KEY_INPUT_ESCAPE) != 0)
 		{
 			break;
 		}
+		*/
 		if (sceneMana && sceneMana->GetExit())
 		{
 			break;
