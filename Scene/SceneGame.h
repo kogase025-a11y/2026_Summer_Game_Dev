@@ -31,7 +31,7 @@ private:
 	static constexpr const char* kPlayerImagePath = "Data/Image/player.png";
 
 	// 入力・プレイヤー・カメラ
-	InputManager input_;
+
 	Player player_;
 	float cameraX_ = 0.0f;
 	FileManager& fileMng_;

@@ -69,8 +69,8 @@ void Player::Update(const InputManager& input, float stageWidth)
 
 	// 左右入力（右=+1, 左=-1）
 	const float moveInput =
-		(input.IsPress(KEY_INPUT_RIGHT) ? 1.0f : 0.0f) -
-		(input.IsPress(KEY_INPUT_LEFT) ? 1.0f : 0.0f);
+		(input.IsNew(KEY_INPUT_RIGHT) ? 1.0f : 0.0f) -
+		(input.IsNew(KEY_INPUT_LEFT) ? 1.0f : 0.0f);
 
 	// 水平方向の移動
 	const float prevX = positionX_;
@@ -97,7 +97,7 @@ void Player::Update(const InputManager& input, float stageWidth)
 	}
 
 	// ジャンプ開始
-	const bool jumpPressed = input.IsTrigger(KEY_INPUT_SPACE);
+	const bool jumpPressed = input.IsTrgDown(KEY_INPUT_SPACE);
 	if (jumpPressed && onGround_)
 	{
 		velocityY_ = -jumpSpeed_;
@@ -129,11 +129,11 @@ void Player::Update(const InputManager& input, float stageWidth)
 	}
 
 	// 状態名更新（アニメーション等で利用）
-	if (input.IsTrigger(KEY_INPUT_X))
+	if (input.IsTrgDown(KEY_INPUT_X))
 	{
 		stateName_ = "Damage";
 	}
-	else if (input.IsTrigger(KEY_INPUT_Z))
+	else if (input.IsTrgDown(KEY_INPUT_Z))
 	{
 		stateName_ = "Attack";
 	}

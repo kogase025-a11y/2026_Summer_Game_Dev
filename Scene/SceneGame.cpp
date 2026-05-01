@@ -20,11 +20,8 @@ SceneGame::~SceneGame() = default;
 
 void SceneGame::Update()
 {
-	// 入力状態更新
-	input_.Update();
-
 	// ESCキーでポーズの切り替え
-	if (input_.IsTrigger(KEY_INPUT_ESCAPE))
+	if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_ESCAPE))
 	{
 		isPause_ = !isPause_;
 	}
@@ -32,11 +29,11 @@ void SceneGame::Update()
 	// ポーズ中の場合はゲームの更新をストップしてメニュー操作のみ受け付ける
 	if (isPause_)
 	{
-		if (input_.IsTrigger(KEY_INPUT_RETURN))
+		if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_RETURN))
 		{
 			EndScene(SceneID::TITLE); // Enterでタイトルへ戻る
 		}
-		if (input_.IsTrigger(KEY_INPUT_Q))
+		if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_Q))
 		{
 			EndScene(SceneID::EXIT); // Qでゲーム終了
 		}
@@ -44,7 +41,7 @@ void SceneGame::Update()
 	}
 
 	// プレイヤー更新
-	player_.Update(input_, kStageWidth);
+	player_.Update(InputManager::GetInstance(), kStageWidth);
 
 	// プレイヤー中心にカメラを追従（ステージ外に出ないよう制限）
 	const float targetCameraX = player_.GetX() - (kScreenWidth * 0.5f);

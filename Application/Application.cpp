@@ -4,6 +4,7 @@
 
 #include "../Manager/FileManager.h"
 #include "../Manager/SceneManager.h"
+#include "../Input/InputManager.h"
 
 Application::Application()
 {
@@ -24,6 +25,8 @@ bool Application::SystemInit(void)
 	}
 
 	SetDrawScreen(DX_SCREEN_BACK);
+
+	InputManager::CreateInstance();
 
 	fileMng_.reset(new FileManager());
 	sceneMana.reset(new SceneManager(*fileMng_));
@@ -55,6 +58,8 @@ void Application::Run(void)
 
 void Application::Update(void)
 {
+	InputManager::GetInstance().Update();
+
 	if (sceneMana)
 	{
 		sceneMana->Update();
@@ -74,6 +79,7 @@ bool Application::Release(void)
 {
 	sceneMana.reset();
 	fileMng_.reset();
+	InputManager::GetInstance().Destroy();
 	DxLib_End();
 	return true;
 }
