@@ -1,11 +1,15 @@
 #include "SceneTitle.h"
-
 #include "../Manager/FileManager.h"
 
 #include <cstring>
 
-SceneTitle::SceneTitle(FileManager&)
+SceneTitle::SceneTitle(FileManager& fileMng)
+	: titleBg_(fileMng.LoadImageFM("./image/GameClear.png"))//タイトルシーン画像の読み込み
 {
+	
+	
+	
+	
 }
 
 void SceneTitle::Update()
@@ -31,8 +35,8 @@ void SceneTitle::Draw()
 
 	DrawBox(0, 0, width, height, GetColor(10, 10, 30), TRUE);
 	DrawBox(40, 40, width - 40, height - 40, GetColor(180, 20, 20), FALSE);
-
-	drawCenterText(35, "TITLE", GetColor(255, 255, 255));
+	DrawRotaGraphF(centerX, height/2, 1.5, 0.0, titleBg_->GetHandle(), TRUE);
+	
 	drawCenterText(65, "PRESS ENTER TO START", GetColor(220, 220, 220));
 
 	DrawBox(centerX - 320, 430, centerX + 320, 650, GetColor(255, 215, 0), TRUE);
