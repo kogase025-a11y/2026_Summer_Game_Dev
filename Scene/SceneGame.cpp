@@ -6,12 +6,12 @@
 #include <algorithm>
 
 SceneGame::SceneGame(FileManager& fileMng, SceneManager* sceneMng)
-	: player_(fileMng), fileMng_(fileMng), sceneMng_(sceneMng)
+	: player_(&stage_,fileMng), fileMng_(fileMng), sceneMng_(sceneMng)
 {
 	player_.SystemInit();
 	player_.GameInit();
 
-	// Git Project の FileManager を使ってプレイヤー画像を取得
+	// Git Project  FileManager g?vC[?擾
 	// 画像が未配置でも player_.Draw 側で矩形描画にフォールバックする
 	playerImage_ = fileMng_.LoadImageFM(kPlayerImagePath);
 }
@@ -41,16 +41,16 @@ void SceneGame::Update()
 	}
 
 	// プレイヤー更新
-	player_.Update(InputManager::GetInstance(), kStageWidth);
+	player_.Update(InputManager::GetInstance());
 
 	// プレイヤー中心にカメラを追従（ステージ外に出ないよう制限）
 	const float targetCameraX = player_.GetX() - (kScreenWidth * 0.5f);
-	const float cameraMax = kStageWidth - static_cast<float>(kScreenWidth);
+	const float cameraMax = stage_.GetStageWidth() - static_cast<float>(kScreenWidth);
 	cameraX_ = (std::max)(0.0f, (std::min)(targetCameraX, cameraMax));
 
-	// Git Project の Rect を使ったゴール当たり判定
+	// Git Project  Rect gS[?
 	const Rect playerRect{ player_.GetX() - 24.0f, player_.GetY() - 48.0f, 48.0f, 48.0f };
-	const Rect goalRect{ kGoalX - 16.0f, player_.GetGroundY() - 180.0f, 32.0f, 180.0f };
+	const Rect goalRect{ stage_.GetGoalX() - 16.0f, stage_.GetGroundY() - 180.0f, 32.0f, 180.0f };
 	if (playerRect.IsHit(goalRect))
 	{
 		EndScene(SceneID::CLEAR);
@@ -68,25 +68,13 @@ void SceneGame::Update()
 
 void SceneGame::Draw()
 {
-	// 背景
+	// wi
 	DrawBox(0, 0, kScreenWidth, kScreenHeight, GetColor(80, 170, 255), TRUE);
 
-	// 地面
-	const int groundY = static_cast<int>(player_.GetGroundY());
-	DrawBox(0, groundY, kScreenWidth, kScreenHeight, GetColor(60, 170, 60), TRUE);
+	// ステージ（背景・床・段差・ゴール等）の描画
+	stage_.Draw(cameraX_, kScreenWidth, kScreenHeight);
 
-	// 段差（プレイヤーの判定と同じ位置）
-	const int stepLeft = static_cast<int>(player_.GetStepStartX() - cameraX_);
-	const int stepRight = static_cast<int>(player_.GetStepEndX() - cameraX_);
-	const int stepTop = static_cast<int>(player_.GetStepTopY());
-	DrawBox(stepLeft, stepTop, stepRight, groundY, GetColor(110, 110, 110), TRUE);
-
-	// ゴール表示
-	const int goalDrawX = static_cast<int>(kGoalX - cameraX_);
-	DrawBox(goalDrawX - 8, groundY - 180, goalDrawX + 8, groundY, GetColor(255, 255, 255), TRUE);
-	DrawTriangle(goalDrawX + 8, groundY - 180, goalDrawX + 72, groundY - 150, goalDrawX + 8, groundY - 120, GetColor(255, 80, 80), TRUE);
-
-	// プレイヤー描画（画像が無ければ Player 側で矩形描画）
+	// vC[`i? Player ?``j
 	const int playerGraphHandle = (playerImage_ ? playerImage_->GetHandle() : -1);
 	player_.Draw(cameraX_, playerGraphHandle);
 

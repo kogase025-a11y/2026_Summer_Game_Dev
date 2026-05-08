@@ -10,13 +10,29 @@
 class FileManager;
 class Vector2;
 class SceneGame;
-
+class Stage;
 
 class Player
 {
 public:
+
+	static constexpr int PlayerWidth = 48; // プレイヤーの幅
+	static constexpr int PlayerHeight = 48; // プレイヤーの高さ
+
+	enum class State
+	{
+		Idle,
+		Run,
+		Jump,
+		Fall,
+		Attack,
+		Damage
+	};
+	
+
+	
 	// 生成・破棄
-	Player(FileManager& fileMng);
+	Player(Stage* stage, FileManager& fileMng);
 	~Player(void);
 	// 初期化・解放
 	bool SystemInit(void);
@@ -26,22 +42,19 @@ public:
 	bool Release(void);
 
 	// 入力付き更新・カメラ付き描画
-	void Update(const InputManager& input, float stageWidth);
+	void Update(const InputManager& input);
 	void Draw(float cameraX, int playerGraphHandle) const;
 
 	// 状態/位置取得
 	const char* GetStateName() const;
 	float GetX() const;
 	float GetY() const;
-	float GetGroundY() const;
-	float GetStepStartX() const;
-	float GetStepEndX() const;
-	float GetStepTopY() const;
 
 private:
 
 	SceneGame* sceneGame_;
 	FileManager& fileMng_;
+	Stage* stage_;
 
 
 	std::shared_ptr<ImageFile> particleTex;
@@ -56,11 +69,6 @@ private:
 	const float moveSpeed_ = 7.0f;
 	const float gravity_ = 0.65f;
 	const float jumpSpeed_ = 14.0f;
-	// 地形パラメータ
-	const float groundY_ = 760.0f;
-	const float stepStartX_ = 1800.0f;
-	const float stepEndX_ = 2500.0f;
-	const float stepTopY_ = 640.0f;
 
 	// アニメーション用状態名
 	const char* stateName_ = "Idle";

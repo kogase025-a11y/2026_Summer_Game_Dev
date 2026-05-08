@@ -2,6 +2,7 @@
 #include "SceneSuper.h"
 #include "../Input/InputManager.h"
 #include "../Player/Player.h"
+#include "../Stage/Stage.h"
 #include <DxLib.h>
 #include <memory>
 
@@ -24,14 +25,12 @@ private:
 	// 画面サイズ
 	static constexpr int kScreenWidth = 1920;
 	static constexpr int kScreenHeight = 1080;
-	// ステージ幅とゴール位置
-	static constexpr float kStageWidth = 5000.0f;
-	static constexpr float kGoalX = 4700.0f;
 	// プレイヤー画像パス（画像未配置でも動作する）
 	static constexpr const char* kPlayerImagePath = "Data/Image/player.png";
 
 	// 入力・プレイヤー・カメラ
 
+	Stage stage_;
 	Player player_;
 	float cameraX_ = 0.0f;
 	FileManager& fileMng_;

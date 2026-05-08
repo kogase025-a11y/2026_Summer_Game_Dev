@@ -1,10 +1,10 @@
 #include "Player.h"
+#include "../Stage/Stage.h"
 
 #include <DxLib.h>
 #include <algorithm>
 
-Player::Player(FileManager& fileMng) : fileMng_(fileMng)
-{
+Player::Player(Stage* stage, FileManager& fileMng) : stage_(stage), fileMng_(fileMng), sceneGame_(nullptr) {
 	
 	 particleTex = fileMng_.LoadImageFM("Image/ToiletPaper.PNG");
 
@@ -19,7 +19,7 @@ bool Player::SystemInit(void)
 {
 	// システム初期化時にプレイヤー状態を初期化
 	positionX_ = 200.0f;
-	positionY_ = groundY_;
+	positionY_ = stage_->GetGroundY();
 	velocityY_ = 0.0f;
 	onGround_ = true;
 	stateName_ = "Idle";
@@ -30,7 +30,7 @@ void Player::GameInit(void)
 {
 	// ゲーム開始時のリセット
 	positionX_ = 300.0f;
-	positionY_ = groundY_;
+	positionY_ = stage_->GetGroundY();
 	velocityY_ = 0.0f;
 	onGround_ = true;
 	stateName_ = "Idle";
@@ -52,7 +52,7 @@ bool Player::Release(void)
 	return true;
 }
 
-void Player::Update(const InputManager& input, float stageWidth)
+void Player::Update(const InputManager& input)
 {
 	// プレイヤー当たり判定の半幅
 	const float playerHalfWidth = 30.0f;
@@ -60,11 +60,7 @@ void Player::Update(const InputManager& input, float stageWidth)
 	// 現在のX座標が通常床か段差上かを返す
 	const auto getGroundYAtX = [this](float x)
 	{
-		if ((x >= stepStartX_) && (x <= stepEndX_))
-		{
-			return stepTopY_;
-		}
-		return groundY_;
+		return stage_->GetGroundYAtX(x);
 	};
 
 	// 左右入力（右=+1, 左=-1）
@@ -77,22 +73,25 @@ void Player::Update(const InputManager& input, float stageWidth)
 	positionX_ += moveInput * moveSpeed_;
 
 	// 画面（ステージ）外に出ないようにクランプ
-	const float clampedStageWidth = (std::max)(0.0f, stageWidth);
+	const float clampedStageWidth = (std::max)(0.0f, stage_->GetStageWidth());
 	const float minX = playerHalfWidth;
 	const float maxX = (std::max)(minX, clampedStageWidth - playerHalfWidth);
 	positionX_ = (std::max)(minX, (std::min)(positionX_, maxX));
 
 	// 段差より下にいる時だけ側面衝突を有効にする
-	const bool isBelowStepTop = (positionY_ > stepTopY_ + 0.5f);
+	const float stepTopY = stage_->GetStepTopY();
+	const float stepStartX = stage_->GetStepStartX();
+	const float stepEndX = stage_->GetStepEndX();
+	const bool isBelowStepTop = (positionY_ > stepTopY + 0.5f);
 	if (isBelowStepTop)
 	{
-		if ((prevX + playerHalfWidth <= stepStartX_) && (positionX_ + playerHalfWidth > stepStartX_))
+		if ((prevX + playerHalfWidth <= stepStartX) && (positionX_ + playerHalfWidth > stepStartX))
 		{
-			positionX_ = stepStartX_ - playerHalfWidth;
+			positionX_ = stepStartX - playerHalfWidth;
 		}
-		else if ((prevX - playerHalfWidth >= stepEndX_) && (positionX_ - playerHalfWidth < stepEndX_))
+		else if ((prevX - playerHalfWidth >= stepEndX) && (positionX_ - playerHalfWidth < stepEndX))
 		{
-			positionX_ = stepEndX_ + playerHalfWidth;
+			positionX_ = stepEndX + playerHalfWidth;
 		}
 	}
 
@@ -199,24 +198,4 @@ float Player::GetX() const
 float Player::GetY() const
 {
 	return positionY_;
-}
-
-float Player::GetGroundY() const
-{
-	return groundY_;
-}
-
-float Player::GetStepStartX() const
-{
-	return stepStartX_;
-}
-
-float Player::GetStepEndX() const
-{
-	return stepEndX_;
-}
-
-float Player::GetStepTopY() const
-{
-	return stepTopY_;
 }
