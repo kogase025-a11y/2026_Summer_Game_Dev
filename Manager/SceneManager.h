@@ -1,9 +1,9 @@
 #pragma once
 #include <memory>
-
-class FileManager;
 #include "../Scene/SceneSuper.h"
 #include "../Util/Fade.h"
+class FileManager;
+
 
 struct ClearResult
 {

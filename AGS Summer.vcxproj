@@ -138,6 +138,7 @@
     <ClCompile Include="Input\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Manager\SceneManager.cpp" />
+    <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="Scene\SceneClear.cpp" />
     <ClCompile Include="Scene\SceneGame.cpp" />
     <ClCompile Include="Scene\SceneTitle.cpp" />
@@ -147,8 +148,10 @@
   <ItemGroup>
     <ClInclude Include="Application\Application.h" />
     <ClInclude Include="FPS\Fps.h" />
+    <ClInclude Include="Input\InputManager.h" />
     <ClInclude Include="Manager\FileManager.h" />
     <ClInclude Include="Manager\ResourceManager.h" />
+    <ClInclude Include="Player\Player.h" />
     <ClInclude Include="Resource\FileSuper.h" />
     <ClInclude Include="Manager\SceneManager.h" />
     <ClInclude Include="Resource\ImageFile.h" />
@@ -160,6 +163,19 @@
     <ClInclude Include="Util\Fade.h" />
     <ClInclude Include="Util\Rect.h" />
     <ClInclude Include="Util\Vector2.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Image\GameClear.PNG" />
+    <Image Include="Image\GameOver.PNG" />
+    <Image Include="Image\ToiletPaper.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Log.txt" />
+    <Text Include="mylog.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

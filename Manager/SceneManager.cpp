@@ -9,9 +9,6 @@
 #include "../Scene/SceneGame.h"
 #include "../Scene/SceneClear.h"
 
-// プロジェクト設定上で Player.cpp が未登録のため暫定で取り込み
-#include "../Player/Player.cpp"
-
 SceneManager::SceneManager(FileManager& fileMng) : fileMng_(fileMng)
 {
 	currentScene = std::unique_ptr<SceneSuper>(new SceneTitle(fileMng_));

@@ -4,7 +4,6 @@
 #include <vector>
 #include "../Application/Application.h"
 #include "../Resource/ImageFile.h"
-//#include "Stage.h"
 #include "../Util/Rect.h"
 
 class FileManager;
